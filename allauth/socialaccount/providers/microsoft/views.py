@@ -38,10 +38,12 @@ class MicrosoftGraphOAuth2Adapter(OAuth2Adapter):
     settings = app_settings.PROVIDERS.get(provider_id, {})
     # Lower case "tenant" for backwards compatibility
     tenant = settings.get("TENANT", settings.get("tenant", "common"))
+    admin_consent_required = settings.get("ADMIN_CONSENT_REQUIRED", False)
 
     provider_base_url = "https://login.microsoftonline.com/{0}".format(tenant)
     access_token_url = "{0}/oauth2/v2.0/token".format(provider_base_url)
-    authorize_url = "{0}/oauth2/v2.0/authorize".format(provider_base_url)
+    authorize_url = "{0}/adminconsent".format(
+        provider_base_url) if admin_consent_required else "{0}/oauth2/v2.0/authorize".format(provider_base_url)
     profile_url = "https://graph.microsoft.com/v1.0/me"
 
     user_properties = (
